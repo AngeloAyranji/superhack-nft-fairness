@@ -38,7 +38,7 @@ RUN npm install -g pm2
 
 COPY --from=build /opt .
 
-RUN yarn install --pure-lockfile --production
+RUN yarn install --pure-lockfile
 
 
 COPY ./views ./views
