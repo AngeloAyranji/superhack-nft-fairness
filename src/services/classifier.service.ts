@@ -13,8 +13,8 @@ export class ClassifierService {
         const fairPlatformsAddresses: string[] = await this.getPlatformsAddresses(true)
         const unfairPlatformsAddresses: string[] = await this.getPlatformsAddresses(false)
 
-        const fairCount: number = await this.fairnessCount(true, fairPlatformsAddresses, tokenId)
-        const unfairCount: number = await this.fairnessCount(false, unfairPlatformsAddresses, tokenId)
+        const fairCount: number = await this.fairnessCount(fairPlatformsAddresses, tokenId)
+        const unfairCount: number = await this.fairnessCount(unfairPlatformsAddresses, tokenId)
 
         return this.calculateScore(fairCount, unfairCount)
     }
@@ -27,7 +27,7 @@ export class ClassifierService {
     }
 
 
-    private async fairnessCount(fair: boolean = true, platformAddresses: string[], tokenId: number): Promise<number> {
+    private async fairnessCount(platformAddresses: string[], tokenId: number): Promise<number> {
         const query = this.buildQuery(platformAddresses, tokenId)
 
         const res = await axios.post(process.env.SUBGRAPH_URL ? process.env.SUBGRAPH_URL : "", {
