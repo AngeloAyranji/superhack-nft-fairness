@@ -42,7 +42,7 @@ export class ClassifierService {
     private buildQuery(platformAddresses: string[], tokenId: number): string {
         return `query ExampleQuery {
             transfers (where: { interacted_with_in: ${JSON.stringify(platformAddresses)}, tokenId: "${tokenId}"}) {
-              to
+              interacted_with
               tokenId
             }
           }`
