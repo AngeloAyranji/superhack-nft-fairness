@@ -9,6 +9,7 @@ import { PLATFORM_REPOSITORY } from "../../repositories/platform.repository";
 @Service()
 export class PlatformService {
 
+  // Injecting the platform repository that handles communication with the database
   @Inject(PLATFORM_REPOSITORY)
   protected repository: PLATFORM_REPOSITORY;
 

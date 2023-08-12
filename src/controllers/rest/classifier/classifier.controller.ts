@@ -4,6 +4,7 @@ import { QueryParams } from "@tsed/platform-params";
 import { Get, Returns, Tags } from "@tsed/schema";
 import { ClassifierService } from "../../../services/classifier.service";
 
+// Controller that handles a REST api to fetch the score and transactions (fair/unfair/uknown)
 @Controller("/classifier")
 @Tags("Classifier")
 export class ClassifierController {

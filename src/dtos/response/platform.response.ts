@@ -1,6 +1,7 @@
 import { Property } from "@tsed/schema";
 import { Platform } from "../../models/platforms";
 
+// Data strucute that represent the response from the platform table
 export class PlatformResponse implements Platform {
   @Property()
   id: string;

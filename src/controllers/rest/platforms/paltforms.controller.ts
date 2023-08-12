@@ -6,6 +6,7 @@ import { PlatformService } from "../../../app-services/platform/platform.service
 import { PlatformResponse } from "../../../dtos/response/platform.response";
 import { PlatformRequest } from "../../../dtos/request/platform.request";
 
+// Controller that handles a REST api to add, delete and get data from the Platforms table
 @Controller("/platforms")
 @Tags("Platform")
 export class PlatformController {

@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
+// Creating the Platform model using typeorm
 @Entity("platforms")
 export class Platform {
     @PrimaryGeneratedColumn("uuid")
