@@ -9,14 +9,14 @@ export class ClassifierService {
     @Inject(PlatformService)
     protected platformService: PlatformService;
 
-    public async startClassification(contractAddress: string, tokenId: number) {
+    public async startClassification(contractAddress: string, tokenId: number): Promise<number> {
         const fairPlatformsAddresses: string[] = await this.getPlatformsAddresses(true)
         const unfairPlatformsAddresses: string[] = await this.getPlatformsAddresses(false)
 
         const fairCount: number = await this.fairnessCount(fairPlatformsAddresses, tokenId)
         const unfairCount: number = await this.fairnessCount(unfairPlatformsAddresses, tokenId)
-
-        return this.calculateScore(fairCount, unfairCount)
+        console.log(fairCount, unfairCount)
+        return fairCount === 0 && unfairCount === 0 ? 0 : this.calculateScore(fairCount, unfairCount)
     }
 
     private async getPlatformsAddresses(fair: boolean = true): Promise<string[]> {
@@ -41,7 +41,7 @@ export class ClassifierService {
 
     private buildQuery(platformAddresses: string[], tokenId: number): string {
         return `query ExampleQuery {
-            transfers (where: { to_in: ${JSON.stringify(platformAddresses)}, tokenId: "${tokenId}"}) {
+            transfers (where: { interacted_with_in: ${JSON.stringify(platformAddresses)}, tokenId: "${tokenId}"}) {
               to
               tokenId
             }

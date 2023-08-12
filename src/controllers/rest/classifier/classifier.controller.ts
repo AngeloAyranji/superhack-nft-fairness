@@ -15,9 +15,10 @@ export class ClassifierController {
   @Returns(200, Number)
   public async getScore(@QueryParams("contractAddress") contractAddress: string, @QueryParams("tokenIds") tokenId: number): Promise<any> {
     try {
-      await this.service.startClassification(contractAddress, tokenId);
+      return (await this.service.startClassification(contractAddress, tokenId)).toString();
     } catch (err) {
-      throw new Exception(err.status, err.message);
+      // throw new Exception(err.status, err.message);
+      console.log(err)
     }
   }
 }
