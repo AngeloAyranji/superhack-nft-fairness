@@ -9,14 +9,22 @@ export class ClassifierService {
     @Inject(PlatformService)
     protected platformService: PlatformService;
 
-    public async startClassification(contractAddress: string, tokenId: number): Promise<number> {
+    public async startClassification(contractAddress: string, tokenId: number): Promise<any> {
         const fairPlatformsAddresses: string[] = await this.getPlatformsAddresses(true)
         const unfairPlatformsAddresses: string[] = await this.getPlatformsAddresses(false)
+        
+        const fairTransactions: any[] = await this.fetchTransactions(fairPlatformsAddresses, tokenId, false)
+        const unfairTransactions: any[] = await this.fetchTransactions(unfairPlatformsAddresses, tokenId, false)
+        const unknowTransactions: any[] = await this.fetchTransactions([...unfairPlatformsAddresses, ...fairPlatformsAddresses], tokenId, true)
+        console.log(fairTransactions.length, unfairTransactions.length)
+        const score = fairTransactions.length === 0 && unfairTransactions.length === 0 ? 0 : this.calculateScore(fairTransactions.length, unfairTransactions.length)
 
-        const fairCount: number = await this.fairnessCount(fairPlatformsAddresses, tokenId)
-        const unfairCount: number = await this.fairnessCount(unfairPlatformsAddresses, tokenId)
-        console.log(fairCount, unfairCount)
-        return fairCount === 0 && unfairCount === 0 ? 0 : this.calculateScore(fairCount, unfairCount)
+        return {
+            score,
+            fairTransactions,
+            unfairTransactions,
+            unknowTransactions
+        }
     }
 
     private async getPlatformsAddresses(fair: boolean = true): Promise<string[]> {
@@ -27,23 +35,24 @@ export class ClassifierService {
     }
 
 
-    private async fairnessCount(platformAddresses: string[], tokenId: number): Promise<number> {
-        const query = this.buildQuery(platformAddresses, tokenId)
+    private async fetchTransactions(platformAddresses: string[], tokenId: number, unknown: boolean = false): Promise<any[]> {
+        const query = this.buildQuery(platformAddresses, tokenId, unknown)
 
-        const res = await axios.post(process.env.SUBGRAPH_URL ? process.env.SUBGRAPH_URL : "", {
+        const res = await axios.post(process.env.SUBGRAPH_URL || "", {
             query: query
         })
-
+        
         console.log(res.data.data.transfers)
         
-        return res.data.data.transfers.length
+        return res.data.data.transfers
     }
 
-    private buildQuery(platformAddresses: string[], tokenId: number): string {
+    private buildQuery(platformAddresses: string[], tokenId: number, unknown: boolean): string {
         return `query ExampleQuery {
-            transfers (where: { interacted_with_in: ${JSON.stringify(platformAddresses)}, tokenId: "${tokenId}"}) {
+            transfers (where: { interacted_with_${unknown === false ? "in" : "not_in"}: ${JSON.stringify(platformAddresses)}, tokenId: "${tokenId}"}) {
               interacted_with
               tokenId
+              blockTimestamp
             }
           }`
     }
